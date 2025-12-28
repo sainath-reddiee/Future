@@ -1,0 +1,32 @@
+🚀 The "Alpha Ledger" Master Prompt (End-to-End)
+Role: Senior Fintech Quant & UI Architect.
+Objective: Build a real-time Indian F&O "Alpha Pulse" Terminal. The dashboard must integrate live Indian market data, provide AI-categorized news sentiment, use a multi-indicator confirmation strategy, and manage a public paper-trading portfolio for real-time performance tracking.
+1. Tech Stack & Aesthetic:
+• Stack: Next.js 14+ (App Router), Tailwind CSS, Supabase (DB), Gemini 1.5 Flash API.
+• UI Style: "High-Density Mission Control." Deep Black (#050505) theme.
+• Visuals: Neon Emerald (#10b981) for profit/bullish, Crimson Pulse (#ef4444) for loss/bearish.
+• Charts: Use lightweight-charts.
+2. The Ingestion & Intelligence Engine (Cron Job):
+• Sources: Scrape NSE Corporate Announcements (Official), Moneycontrol RSS, and Pulse by Zerodha.
+• AI Analysis (Gemini): Every 15 mins (Market Hours 09:00 - 15:45 IST), analyze the headlines.
+• Prompt: "Analyze this news for its 1-hour impact on Nifty 50. Output JSON: {sentiment: -1.0 to 1.0, category: 'Macro/Earnings/Policy', rationale: '10 words max'}."
+• Signal Flip: If holding a virtual 'BUY' and a new News Signal comes in at < -0.7, trigger an Immediate Virtual Exit.
+3. The "Power Suite" Indicator Strategy:
+• Trend: Current Price must be above/below VWAP and SMA 50.
+• Momentum: Check EMA 9/21 Crossover and MACD (12, 26, 9).
+• Filter: Do not execute a virtual trade if RSI (14) is Overbought (>70) or Oversold (<30).
+• Volatility: Display India VIX on the HUD.
+4. Real-Time Paper Trading Module:
+• The "Live Proof": Start with a virtual ₹1,00,000 balance.
+• Transparent Ledger: A public-facing table showing: ID | Entry Headline | Entry Price | Current Price | P&L (₹) | Status (Open/Closed) | Exit Logic (e.g., 'Signal Flip' or 'SL Hit').
+• Performance HUD: Live dashboard showing:
+• Total Equity Curve.
+• Today's Unrealized vs. Realized P&L.
+• AI Accuracy Rate: % of signals that were profitable.
+5. Operational Guardrails:
+• Market Hours: Logic must only run Monday–Friday, 09:15 AM – 03:30 PM IST.
+• Auto-Square Off: All open virtual trades MUST auto-close at 03:20 PM daily to avoid expiry/overnight risk.
+Implementation Instructions:
+1. Focus on a non-blocking, high-speed UI.
+2. Ensure the useAlphaSignals hook centralizes the News + Indicator logic.
+3. Build the "Indicator HUD" to show users exactly which technicals are currently "Green" or "Red."

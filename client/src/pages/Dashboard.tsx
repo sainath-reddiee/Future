@@ -12,10 +12,14 @@ export default function Dashboard() {
 
   // For debug/demo purposes to quickly add a trade
   const handleQuickAdd = () => {
+    // Randomize trade data for demo
+    const randomPrice = 24500 + Math.random() * 200;
+    const isLong = Math.random() > 0.5;
+    
     createTrade({
-      headline: "NIFTY 50 Breakout",
-      entryPrice: "22150",
-      currentPrice: "22150",
+      headline: `NIFTY 50 ${isLong ? 'Long' : 'Short'} Entry`,
+      entryPrice: randomPrice.toFixed(2),
+      currentPrice: randomPrice.toFixed(2),
       pnl: "0",
       status: "OPEN",
       exitLogic: null

@@ -1,6 +1,8 @@
 import { useMarketData } from "@/hooks/use-market-data";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Activity, Zap } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export function HUD() {
   const { data, isLoading } = useMarketData();
@@ -13,6 +15,10 @@ export function HUD() {
 
   const isBullish = parseFloat(data.change) >= 0;
   const isVixHigh = parseFloat(data.vix) > 20;
+
+  const lastUpdated = data.lastUpdated ? new Date(data.lastUpdated) : new Date(data.timestamp);
+  const dataAge = Date.now() - lastUpdated.getTime();
+  const isDataFresh = dataAge < 30000;
 
   // Safe parsing for macd jsonb
   let macdSignal = "NEUTRAL";
@@ -46,12 +52,21 @@ export function HUD() {
           </span>
         </div>
         <div className="h-1 w-full mt-3 bg-zinc-900 rounded-full overflow-hidden">
-          <motion.div 
+          <motion.div
             className={`h-full ${isBullish ? 'bg-emerald-500' : 'bg-rose-500'}`}
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
           />
+        </div>
+        <div className="flex items-center gap-1 mt-2">
+          <span className={cn(
+            "w-2 h-2 rounded-full",
+            isDataFresh ? "bg-green-500 animate-pulse" : "bg-yellow-500"
+          )} />
+          <span className="text-[10px] text-zinc-600 font-mono">
+            {data.source || 'Live'} • {formatDistanceToNow(lastUpdated, { addSuffix: true })}
+          </span>
         </div>
       </div>
 

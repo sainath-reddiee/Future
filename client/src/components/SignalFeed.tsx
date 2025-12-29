@@ -1,6 +1,6 @@
 import { useSignals, useAnalyzeSignal } from "@/hooks/use-signals";
 import { Button } from "./ui/button";
-import { Loader2, Radio, BrainCircuit } from "lucide-react";
+import { Loader2, Radio, BrainCircuit, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
@@ -8,6 +8,7 @@ export function SignalFeed() {
   const { data: signals, isLoading } = useSignals();
   const { mutate: analyze, isPending: isAnalyzing } = useAnalyzeSignal();
   const [customHeadline, setCustomHeadline] = useState("");
+  const [isAggregating, setIsAggregating] = useState(false);
 
   const handleSimulate = () => {
     const headlines = [
@@ -21,6 +22,26 @@ export function SignalFeed() {
     analyze(random);
   };
 
+  const handleAggregateNews = async () => {
+    setIsAggregating(true);
+    try {
+      const response = await fetch('/api/signals/aggregate', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to aggregate news');
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error('News aggregation error:', error);
+    } finally {
+      setIsAggregating(false);
+    }
+  };
+
   return (
     <div className="glass-panel rounded-xl h-full flex flex-col min-h-[400px]">
       <div className="p-4 border-b border-white/5 bg-black/20 flex justify-between items-center">
@@ -28,16 +49,28 @@ export function SignalFeed() {
           <BrainCircuit className="w-4 h-4 text-accent" />
           <h3 className="text-sm font-bold tracking-widest text-zinc-400">SIGNAL FEED // INTELLIGENCE</h3>
         </div>
-        <Button 
-          size="sm" 
-          variant="outline" 
-          className="h-7 text-xs border-accent/20 text-accent hover:bg-accent/10 hover:text-accent font-mono"
-          onClick={handleSimulate}
-          disabled={isAnalyzing}
-        >
-          {isAnalyzing ? <Loader2 className="w-3 h-3 animate-spin mr-1"/> : <Radio className="w-3 h-3 mr-1"/>}
-          SIMULATE NEWS
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 font-mono"
+            onClick={handleAggregateNews}
+            disabled={isAggregating}
+          >
+            {isAggregating ? <Loader2 className="w-3 h-3 animate-spin mr-1"/> : <Radio className="w-3 h-3 mr-1"/>}
+            FETCH NEWS
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs border-accent/20 text-accent hover:bg-accent/10 hover:text-accent font-mono"
+            onClick={handleSimulate}
+            disabled={isAnalyzing}
+          >
+            {isAnalyzing ? <Loader2 className="w-3 h-3 animate-spin mr-1"/> : <Radio className="w-3 h-3 mr-1"/>}
+            SIMULATE
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
@@ -73,9 +106,34 @@ export function SignalFeed() {
                 <p className="text-sm font-medium text-zinc-200 mb-2 leading-relaxed">
                   {signal.headline}
                 </p>
-                
+
+                {signal.summary && (
+                  <p className="text-xs text-zinc-400 mb-2 leading-relaxed">
+                    {signal.summary}
+                  </p>
+                )}
+
                 <div className="text-xs text-zinc-500 border-t border-white/5 pt-2 font-mono">
                   {signal.rationale}
+                </div>
+
+                <div className="flex items-center justify-between mt-2 text-xs">
+                  {signal.source && (
+                    <span className="text-zinc-600 font-mono">
+                      Source: {signal.source}
+                    </span>
+                  )}
+                  {signal.sourceUrl && (
+                    <a
+                      href={signal.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent hover:text-accent/80 flex items-center gap-1 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Read Article
+                    </a>
+                  )}
                 </div>
               </motion.div>
             );

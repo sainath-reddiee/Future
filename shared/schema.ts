@@ -29,6 +29,11 @@ export const signals = pgTable("signals", {
   category: text("category").notNull(), // 'Macro', 'Earnings', 'Policy'
   rationale: text("rationale").notNull(),
   timestamp: timestamp("timestamp").defaultNow(),
+  source: varchar("source", { length: 100 }), // News source name (e.g., "Economic Times")
+  sourceUrl: text("source_url"), // Original article URL
+  summary: text("summary"), // 2-3 sentence summary
+  publishedAt: timestamp("published_at"), // Original publication time
+  relevanceScore: numeric("relevance_score").default('75.0'), // 0-100 relevance to Nifty 50
 });
 
 export const insertSignalSchema = createInsertSchema(signals).omit({ id: true, timestamp: true });
@@ -56,6 +61,12 @@ export const marketData = pgTable("market_data", {
   symbol: text("symbol").notNull(), // e.g., 'NIFTY 50'
   price: numeric("price").notNull(),
   change: numeric("change").notNull(),
+  changePercent: numeric("change_percent"), // Percentage change
+  open: numeric("open"), // Day open price
+  high: numeric("high"), // Day high
+  low: numeric("low"), // Day low
+  previousClose: numeric("previous_close"), // Previous close
+  volume: numeric("volume"), // Trading volume (using numeric for large numbers)
   vwap: numeric("vwap").notNull(),
   sma50: numeric("sma50").notNull(),
   ema9: numeric("ema9").notNull(),
@@ -64,9 +75,25 @@ export const marketData = pgTable("market_data", {
   macd: jsonb("macd").notNull(), // { macd, signal, histogram }
   vix: numeric("vix").notNull(),
   timestamp: timestamp("timestamp").defaultNow(),
+  source: varchar("source", { length: 50 }), // API source (e.g., "NSE", "Yahoo Finance")
+  lastUpdated: timestamp("last_updated").defaultNow(), // When data was last refreshed
 });
 
 export const insertMarketDataSchema = createInsertSchema(marketData).omit({ id: true, timestamp: true });
 export type MarketData = typeof marketData.$inferSelect;
 export type InsertMarketData = z.infer<typeof insertMarketDataSchema>;
+
+// === API CACHE ===
+export const apiCache = pgTable("api_cache", {
+  id: serial("id").primaryKey(),
+  cacheKey: varchar("cache_key", { length: 255 }).notNull().unique(),
+  cacheValue: jsonb("cache_value").notNull(),
+  source: varchar("source", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
+export const insertApiCacheSchema = createInsertSchema(apiCache).omit({ id: true, createdAt: true });
+export type ApiCache = typeof apiCache.$inferSelect;
+export type InsertApiCache = z.infer<typeof insertApiCacheSchema>;
 

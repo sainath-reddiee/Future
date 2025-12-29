@@ -16,7 +16,7 @@ export function HUD() {
   const isBullish = parseFloat(data.change) >= 0;
   const isVixHigh = parseFloat(data.vix) > 20;
 
-  const lastUpdated = data.lastUpdated ? new Date(data.lastUpdated) : new Date(data.timestamp);
+  const lastUpdated = data.lastUpdated ? new Date(data.lastUpdated) : (data.timestamp ? new Date(data.timestamp) : new Date());
   const dataAge = Date.now() - lastUpdated.getTime();
   const isDataFresh = dataAge < 30000;
 

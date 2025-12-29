@@ -44,8 +44,9 @@ export class MarketDataService {
       ema9: 24305.80,
       ema21: 24265.40,
       rsi: 58.35,
-      macd: { value: 45.20, signal: 38.15, histogram: 7.05 },
+      macd: { macd: 45.20, signal: 38.15, histogram: 7.05 },
       vix: 14.25,
+      timestamp: new Date(),
       source: 'Mock Data',
       lastUpdated: new Date(),
     };

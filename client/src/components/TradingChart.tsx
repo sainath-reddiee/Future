@@ -63,12 +63,12 @@ export function TradingChart() {
 
     // Seed initial data (Simulated past hour)
     const now = Math.floor(Date.now() / 1000);
-    const initialData = [];
-    const smaData = [];
-    const emaData = [];
-    
+    const initialData: { time: number; value: number }[] = [];
+    const smaData: { time: number; value: number }[] = [];
+    const emaData: { time: number; value: number }[] = [];
+
     let price = 24500; // NIFTY 50 base
-    
+
     // Adjust volatility based on interval
     let volatility = 50;
     if (interval === "5m") volatility = 100;
@@ -77,29 +77,29 @@ export function TradingChart() {
     for (let i = 0; i < 200; i++) {
       price = price + (Math.random() - 0.5) * volatility;
       const time = now - (200 - i) * (interval === "1m" ? 60 : interval === "5m" ? 300 : 3600);
-      
+
       initialData.push({ time, value: price });
-      
+
       // Simple moving averages simulation
       if (i >= 50) {
         const sum = initialData.slice(i - 50, i).reduce((acc, val) => acc + val.value, 0);
         smaData.push({ time, value: sum / 50 });
       }
-      
+
       // Simple EMA simulation
       if (i > 0) {
-         const prevEma = emaData.length > 0 ? emaData[emaData.length - 1].value : price;
+         const prevEma: number = emaData.length > 0 ? emaData[emaData.length - 1].value : price;
          const k = 2 / (21 + 1);
-         const ema = price * k + prevEma * (1 - k);
+         const ema: number = price * k + prevEma * (1 - k);
          emaData.push({ time, value: ema });
       } else {
          emaData.push({ time, value: price });
       }
     }
-    
-    areaSeries.setData(initialData);
-    smaSeries.setData(smaData);
-    emaSeries.setData(emaData);
+
+    areaSeries.setData(initialData as any);
+    smaSeries.setData(smaData as any);
+    emaSeries.setData(emaData as any);
 
     chartInstance.current = chart;
     seriesInstance.current = areaSeries;
